@@ -3,7 +3,6 @@ package main
 import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
-	"fyne.io/fyne/v2/canvas"
 	"github.com/CyborgMaster/go-mandelbrot/mandelbrot"
 )
 
@@ -77,9 +76,11 @@ func main() {
 	myApp := app.New()
 	w := myApp.NewWindow("Raster")
 
-	raster := canvas.NewRasterWithPixels(mandelbrot.DrawPixel)
+	// raster := canvas.NewRasterWithPixels(mandelbrot.Pixel)
 	// raster := canvas.NewRasterFromImage()
+
+	raster := mandelbrot.NewRaster()
 	w.SetContent(raster)
-	w.Resize(fyne.NewSize(120, 100))
+	w.Resize(fyne.NewSize(800, 600))
 	w.ShowAndRun()
 }
