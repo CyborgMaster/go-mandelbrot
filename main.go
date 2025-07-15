@@ -6,7 +6,6 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
-	"github.com/CyborgMaster/go-mandelbrot/mandelbrot"
 )
 
 func main() {
@@ -15,7 +14,7 @@ func main() {
 	myApp := app.New()
 	w := myApp.NewWindow("Raster")
 	w.Resize(fyne.NewSize(800, 600))
-	w.SetContent(mandelbrot.NewMandelbrotImage())
+	w.SetContent(NewMandelbrotImage())
 	w.SetPadded(false)
 	w.ShowAndRun()
 }
@@ -24,6 +23,6 @@ func main() {
 // TODO: don't flip things when we drag the rectangle the other way
 // TODO: Zooming, by double click
 // TODO: Progressive rendering (low res first)
-// TODO: color cycling
+// TODO: color cycling, use a better color palette based on HCL
 // TODO: zoom out
 // TODO: when dragging, show a rectangle that shows the area that will be zoomed in on

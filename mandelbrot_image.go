@@ -1,4 +1,4 @@
-package mandelbrot
+package main
 
 import (
 	"context"
@@ -10,6 +10,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/widget"
+	"github.com/CyborgMaster/go-mandelbrot/mandelbrot"
 )
 
 type MandelbrotImage struct {
@@ -18,7 +19,7 @@ type MandelbrotImage struct {
 	image            draw.Image
 	canvasSize       image.Point
 	cancelDrawing    context.CancelFunc
-	mandelbrotBounds Bounds
+	mandelbrotBounds mandelbrot.Bounds
 
 	dragging  bool
 	dragStart fyne.Position
@@ -27,7 +28,7 @@ type MandelbrotImage struct {
 
 func NewMandelbrotImage() *MandelbrotImage {
 	r := &MandelbrotImage{
-		mandelbrotBounds: Bounds{
+		mandelbrotBounds: mandelbrot.Bounds{
 			Left:   -2.5,
 			Right:  1.5,
 			Top:    1.5,
@@ -81,7 +82,12 @@ func (r *MandelbrotImage) redraw() {
 	r.cancelDrawing = cancel
 	r.image = image.NewRGBA(image.Rect(0, 0, r.canvasSize.X, r.canvasSize.Y))
 	go func(ctx context.Context, img draw.Image) {
-		linesDone := DrawImage(ctx, img, r.mandelbrotBounds, runtime.GOMAXPROCS(-1))
+		linesDone := mandelbrot.DrawImage(
+			ctx,
+			img,
+			r.mandelbrotBounds,
+			runtime.GOMAXPROCS(-1),
+		)
 		for range linesDone {
 			fyne.Do(r.Refresh)
 		}
