@@ -19,7 +19,6 @@ func main() {
 	w.ShowAndRun()
 }
 
-// TODO: Zooming, by double click
 // TODO: Progressive rendering (low res first)
 // TODO: color cycling, use a better color palette based on HCL
 // TODO: zoom out

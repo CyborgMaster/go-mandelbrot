@@ -59,6 +59,12 @@ func (r *MandelbrotImage) Tapped(event *fyne.PointEvent) {
 	fmt.Println("Tapped at", event.Position)
 }
 
+func (r *MandelbrotImage) DoubleTapped(event *fyne.PointEvent) {
+	fmt.Println("DoubleTapped at", event.Position)
+	r.selectedBounds = r.drawnBounds.ZoomToPoint(event.Position, r.Size(), 4)
+	r.redraw()
+}
+
 func (r *MandelbrotImage) Dragged(event *fyne.DragEvent) {
 	if !r.dragging {
 		r.dragging = true

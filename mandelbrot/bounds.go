@@ -73,10 +73,24 @@ func (b Bounds) ZoomToBox(
 	)
 }
 
+func (b Bounds) ZoomToPoint(
+	point fyne.Position,
+	size fyne.Size,
+	zoomFactor float64,
+) Bounds {
+	center := b.PositionOffset(point, size)
+	newWidth := b.Width() / zoomFactor
+	newHeight := b.Height() / zoomFactor
+	return Bounds{
+		Left:   center.X - newWidth/2,
+		Right:  center.X + newWidth/2,
+		Top:    center.Y + newHeight/2,
+		Bottom: center.Y - newHeight/2,
+	}
+}
+
 func (b Bounds) MatchCanvasAspectRatio(size image.Point) Bounds {
-	// Calculate the aspect ratio of the current bounds
 	currentAspect := b.Width() / b.Height()
-	// Calculate the aspect ratio of the image size
 	canvasAspect := float64(size.X) / float64(size.Y)
 
 	newBounds := b
