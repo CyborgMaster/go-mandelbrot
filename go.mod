@@ -2,7 +2,10 @@ module github.com/CyborgMaster/go-mandelbrot
 
 go 1.24.5
 
-require fyne.io/fyne/v2 v2.6.1
+require (
+	fyne.io/fyne/v2 v2.6.1
+	github.com/lucasb-eyer/go-colorful v1.2.0
+)
 
 require (
 	fyne.io/systray v1.11.0 // indirect

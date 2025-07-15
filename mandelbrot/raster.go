@@ -15,18 +15,35 @@ import (
 type MandelbrotImage struct {
 	*canvas.Raster
 
-	img           draw.Image
-	cancelDrawing context.CancelFunc
+	img              draw.Image
+	cancelDrawing    context.CancelFunc
+	mandelbrotBounds Bounds
+
+	dragging  bool
+	dragStart fyne.Position
+	dragEnd   fyne.Position
 }
 
 func NewMandelbrotImage() *MandelbrotImage {
-	r := &MandelbrotImage{}
+	r := &MandelbrotImage{
+		mandelbrotBounds: Bounds{
+			Left:   -2.5,
+			Right:  1.5,
+			Top:    1.5,
+			Bottom: -1.5,
+		},
+	}
+
 	r.Raster = canvas.NewRaster(func(w, h int) image.Image {
 		if r.img == nil ||
 			r.img.Bounds().Size().X != w ||
 			r.img.Bounds().Size().Y != h {
 
-			r.redraw(w, h)
+			fmt.Println("resizing", w, h)
+			rect := image.Rect(0, 0, w, h)
+			img := image.NewRGBA(rect)
+			r.img = img
+			r.redraw()
 		}
 
 		return r.img
@@ -43,22 +60,33 @@ func (r *MandelbrotImage) Tapped(event *fyne.PointEvent) {
 	fmt.Println("Tapped at", event.Position)
 }
 
-func (r *MandelbrotImage) redraw(w, h int) {
+func (r *MandelbrotImage) Dragged(event *fyne.DragEvent) {
+	if !r.dragging {
+		r.dragging = true
+		r.dragStart = event.Position.Subtract(event.Dragged)
+	}
+	r.dragEnd = event.Position
+}
+
+func (r *MandelbrotImage) DragEnd() {
+	fmt.Println("Dragged", r.dragStart, "to", r.dragEnd)
+	r.dragging = false
+	r.mandelbrotBounds = r.mandelbrotBounds.ZoomToBox(r.dragStart, r.dragEnd, r.Size())
+	r.redraw()
+}
+
+func (r *MandelbrotImage) redraw() {
 	if r.cancelDrawing != nil {
 		r.cancelDrawing()
 		r.cancelDrawing = nil
 	}
-	rect := image.Rect(0, 0, w, h)
-	img := image.NewRGBA(rect)
-	r.img = img
 	ctx, cancel := context.WithCancel(context.Background())
 	r.cancelDrawing = cancel
 
 	go func(ctx context.Context, img draw.Image) {
-		fmt.Println("redrawing", w, h)
-		for range DrawImage(ctx, img, runtime.GOMAXPROCS(-1)) {
+		for range DrawImage(ctx, img, r.mandelbrotBounds, runtime.GOMAXPROCS(-1)) {
 			fyne.Do(r.Refresh)
 		}
 		r.cancelDrawing = nil
-	}(ctx, img)
+	}(ctx, r.img)
 }

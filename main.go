@@ -14,13 +14,14 @@ func main() {
 
 	myApp := app.New()
 	w := myApp.NewWindow("Raster")
-	w.SetContent(mandelbrot.NewMandelbrotImage())
 	w.Resize(fyne.NewSize(800, 600))
+	w.SetContent(mandelbrot.NewMandelbrotImage())
+	w.SetPadded(false)
 	w.ShowAndRun()
 }
 
-// TODO: Zooming
-// TODO: Keep aspect ratio the same
-// TODO: Colors
+// TODO: Keep aspect ratio the same, expand the rendered image either vertically or horizontally to match the aspect ratio of the window
+// TODO: Zooming, by double click
 // TODO: Progressive rendering (low res first)
 // TODO: color cycling
+// TODO: zoom out
