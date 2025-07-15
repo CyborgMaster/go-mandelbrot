@@ -21,5 +21,6 @@ func main() {
 
 // TODO: Progressive rendering (low res first)
 // TODO: color cycling, use a better color palette based on HCL
-// TODO: zoom out
+// TODO: zoom out with right click
 // TODO: when dragging, show a rectangle that shows the area that will be zoomed in on
+// TODO: have a history and you can go back to previous bounds
