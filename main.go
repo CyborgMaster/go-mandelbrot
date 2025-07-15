@@ -19,7 +19,6 @@ func main() {
 	w.ShowAndRun()
 }
 
-// TODO: don't flip things when we drag the rectangle the other way
 // TODO: Zooming, by double click
 // TODO: Progressive rendering (low res first)
 // TODO: color cycling, use a better color palette based on HCL

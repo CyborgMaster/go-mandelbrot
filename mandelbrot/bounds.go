@@ -24,22 +24,12 @@ type Bounds struct {
 	Bottom float64
 }
 
-func BoundsFromTopLeftBottomRight(topLeft, bottomRight Point) Bounds {
-	// func Rect(x0, y0, x1, y1 int) Rectangle {
-	// 	if x0 > x1 {
-	// 		x0, x1 = x1, x0
-	// 	}
-	// 	if y0 > y1 {
-	// 		y0, y1 = y1, y0
-	// 	}
-	// 	return Rectangle{Point{x0, y0}, Point{x1, y1}}
-	// }
-
+func NewBoundsFromPoints(p1, p2 Point) Bounds {
 	return Bounds{
-		Top:    topLeft.Y,
-		Left:   topLeft.X,
-		Bottom: bottomRight.Y,
-		Right:  bottomRight.X,
+		Left:   min(p1.X, p2.X),
+		Right:  max(p1.X, p2.X),
+		Top:    max(p1.Y, p2.Y),
+		Bottom: min(p1.Y, p2.Y),
 	}
 }
 
@@ -77,7 +67,7 @@ func (b Bounds) ZoomToBox(
 	botRight fyne.Position,
 	size fyne.Size,
 ) Bounds {
-	return BoundsFromTopLeftBottomRight(
+	return NewBoundsFromPoints(
 		b.PositionOffset(topLeft, size),
 		b.PositionOffset(botRight, size),
 	)
