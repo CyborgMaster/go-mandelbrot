@@ -15,7 +15,8 @@ import (
 type MandelbrotImage struct {
 	*canvas.Raster
 
-	img              draw.Image
+	image            draw.Image
+	canvasSize       image.Point
 	cancelDrawing    context.CancelFunc
 	mandelbrotBounds Bounds
 
@@ -35,18 +36,14 @@ func NewMandelbrotImage() *MandelbrotImage {
 	}
 
 	r.Raster = canvas.NewRaster(func(w, h int) image.Image {
-		if r.img == nil ||
-			r.img.Bounds().Size().X != w ||
-			r.img.Bounds().Size().Y != h {
-
+		size := image.Point{X: w, Y: h}
+		if r.image == nil || r.canvasSize != size {
 			fmt.Println("resizing", w, h)
-			rect := image.Rect(0, 0, w, h)
-			img := image.NewRGBA(rect)
-			r.img = img
+			r.canvasSize = size
 			r.redraw()
 		}
 
-		return r.img
+		return r.image
 	})
 
 	return r
@@ -82,11 +79,12 @@ func (r *MandelbrotImage) redraw() {
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	r.cancelDrawing = cancel
-
+	r.image = image.NewRGBA(image.Rect(0, 0, r.canvasSize.X, r.canvasSize.Y))
 	go func(ctx context.Context, img draw.Image) {
-		for range DrawImage(ctx, img, r.mandelbrotBounds, runtime.GOMAXPROCS(-1)) {
+		linesDone := DrawImage(ctx, img, r.mandelbrotBounds, runtime.GOMAXPROCS(-1))
+		for range linesDone {
 			fyne.Do(r.Refresh)
 		}
 		r.cancelDrawing = nil
-	}(ctx, r.img)
+	}(ctx, r.image)
 }
