@@ -15,7 +15,7 @@ const MAX_ITERATIONS = 1000
 
 func Pixel(point image.Point, size image.Point, bounds Bounds) color.Color {
 	z := 0 + 0i
-	c := complex(bounds.PixelOffset(point, size))
+	c := bounds.PixelOffset(point, size).Complex()
 
 	for i := range MAX_ITERATIONS {
 		if cmplx.Abs(z) >= 2.0 {

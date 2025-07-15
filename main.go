@@ -19,7 +19,6 @@ func main() {
 	w.ShowAndRun()
 }
 
-// TODO: Keep aspect ratio the same, expand the rendered image either vertically or horizontally to match the aspect ratio of the window
 // TODO: don't flip things when we drag the rectangle the other way
 // TODO: Zooming, by double click
 // TODO: Progressive rendering (low res first)
