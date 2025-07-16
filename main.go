@@ -19,8 +19,9 @@ func main() {
 	w.ShowAndRun()
 }
 
-// TODO: Progressive rendering (low res first)
-// TODO: color cycling, use a better color palette based on HCL
+// TODO: color cycling using a palette
 // TODO: display and allow adjusting the iteration limit
 // TODO: when dragging, show a rectangle that shows the area that will be zoomed in on
+// TODO: indicate render progress
+// TODO: indicate zoom level using the exponent of the selected size
 // TODO: have a history and you can go back to previous bounds
