@@ -4,31 +4,27 @@ import (
 	"context"
 	"fmt"
 	"image"
-	"image/color"
-	"image/draw"
 	"math/cmplx"
-
-	"github.com/lucasb-eyer/go-colorful"
 )
 
 const MAX_ITERATIONS = 10000
 
-func PixelColor(point image.Point, size image.Point, bounds Bounds) color.Color {
+func PixelColor(point image.Point, size image.Point, bounds Bounds) uint8 {
 	z := 0 + 0i
 	c := bounds.PixelOffset(point, size).Complex()
 
 	for i := range MAX_ITERATIONS {
 		if cmplx.Abs(z) >= 2.0 {
-			return colorful.Hsv(float64(i%360), 1, 0.5)
+			return uint8(i%255) + 1 // Use a simple color palette based on iteration count
 		}
 		z = cmplx.Pow(z, 2) + c
 	}
-	return color.Black
+	return 0
 }
 
 func DrawImage(
 	ctx context.Context,
-	img draw.Image,
+	img *image.Paletted,
 	bounds Bounds,
 	gorouintes int,
 ) (lineDone <-chan struct{}) {
@@ -108,14 +104,14 @@ func DrawImage(
 }
 
 func DrawSquare(
-	img draw.Image,
+	img *image.Paletted,
 	topLeft image.Point,
 	size int,
-	color color.Color,
+	colorPalletIndex uint8,
 ) {
 	for y := range size {
 		for x := range size {
-			img.Set(topLeft.X+x, topLeft.Y+y, color)
+			img.SetColorIndex(topLeft.X+x, topLeft.Y+y, colorPalletIndex)
 		}
 	}
 }

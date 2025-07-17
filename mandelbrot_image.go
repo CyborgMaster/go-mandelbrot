@@ -4,19 +4,21 @@ import (
 	"context"
 	"fmt"
 	"image"
-	"image/draw"
+	"image/color"
 	"runtime"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/widget"
 	"github.com/CyborgMaster/go-mandelbrot/mandelbrot"
+	"github.com/lucasb-eyer/go-colorful"
 )
 
 type MandelbrotImage struct {
 	*canvas.Raster
 
-	image          draw.Image
+	image          *image.Paletted
+	palette        color.Palette
 	canvasSize     image.Point
 	cancelDrawing  context.CancelFunc
 	selectedBounds mandelbrot.Bounds
@@ -35,6 +37,7 @@ func NewMandelbrotImage() *MandelbrotImage {
 			Top:    1.5,
 			Bottom: -1.5,
 		},
+		palette: generatePallet(),
 	}
 
 	r.Raster = canvas.NewRaster(func(w, h int) image.Image {
@@ -49,6 +52,16 @@ func NewMandelbrotImage() *MandelbrotImage {
 	})
 
 	return r
+}
+
+func generatePallet() color.Palette {
+	palette := make(color.Palette, 256)
+	palette[0] = color.Black
+	for i := 0; i < 255; i++ {
+		palette[i+1] = colorful.Hsv(float64(360.0/255)*float64(i), 1, 0.5)
+
+	}
+	return palette
 }
 
 func (r *MandelbrotImage) CreateRenderer() fyne.WidgetRenderer {
@@ -93,9 +106,10 @@ func (r *MandelbrotImage) redraw() {
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	r.cancelDrawing = cancel
-	r.image = image.NewRGBA(image.Rect(0, 0, r.canvasSize.X, r.canvasSize.Y))
+	size := image.Rect(0, 0, r.canvasSize.X, r.canvasSize.Y)
+	r.image = image.NewPaletted(size, r.palette)
 	r.drawnBounds = r.selectedBounds.MatchCanvasAspectRatio(r.canvasSize)
-	go func(ctx context.Context, img draw.Image, bounds mandelbrot.Bounds) {
+	go func(ctx context.Context, img *image.Paletted, bounds mandelbrot.Bounds) {
 		linesDone := mandelbrot.DrawImage(ctx, img, bounds, runtime.GOMAXPROCS(-1))
 		for range linesDone {
 			fyne.Do(r.Refresh)
