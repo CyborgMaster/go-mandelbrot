@@ -19,7 +19,6 @@ func main() {
 	w.ShowAndRun()
 }
 
-// TODO: color cycling using a palette
 // TODO: display and allow adjusting the iteration limit
 // TODO: when dragging, show a rectangle that shows the area that will be zoomed in on
 // TODO: indicate render progress

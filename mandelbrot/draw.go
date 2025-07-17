@@ -7,7 +7,7 @@ import (
 	"math/cmplx"
 )
 
-const MAX_ITERATIONS = 10000
+const MAX_ITERATIONS = 1000
 
 func PixelColor(point image.Point, size image.Point, bounds Bounds) uint8 {
 	z := 0 + 0i

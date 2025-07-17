@@ -6,6 +6,7 @@ import (
 	"image"
 	"image/color"
 	"runtime"
+	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
@@ -27,6 +28,8 @@ type MandelbrotImage struct {
 	dragging  bool
 	dragStart fyne.Position
 	dragEnd   fyne.Position
+
+	colorAnimation *fyne.Animation
 }
 
 func NewMandelbrotImage() *MandelbrotImage {
@@ -57,11 +60,19 @@ func NewMandelbrotImage() *MandelbrotImage {
 func generatePallet() color.Palette {
 	palette := make(color.Palette, 256)
 	palette[0] = color.Black
-	for i := 0; i < 255; i++ {
+	for i := range 255 {
 		palette[i+1] = colorful.Hsv(float64(360.0/255)*float64(i), 1, 0.5)
 
 	}
 	return palette
+}
+
+func rotatePalette(palette color.Palette) color.Palette {
+	newPalette := make(color.Palette, 1, len(palette))
+	newPalette[0] = palette[0] // black stays in the same spot
+	newPalette = append(newPalette, palette[2:]...)
+	newPalette = append(newPalette, palette[1])
+	return newPalette
 }
 
 func (r *MandelbrotImage) CreateRenderer() fyne.WidgetRenderer {
@@ -69,7 +80,18 @@ func (r *MandelbrotImage) CreateRenderer() fyne.WidgetRenderer {
 }
 
 func (r *MandelbrotImage) Tapped(event *fyne.PointEvent) {
-	fmt.Println("Tapped at", event.Position)
+	if r.colorAnimation != nil {
+		r.colorAnimation.Stop()
+		r.colorAnimation = nil
+		return
+	}
+
+	r.colorAnimation = fyne.NewAnimation(1*time.Hour, func(float32) {
+		r.palette = rotatePalette(r.palette)
+		r.image.Palette = r.palette
+		r.Refresh()
+	})
+	r.colorAnimation.Start()
 }
 
 func (r *MandelbrotImage) DoubleTapped(event *fyne.PointEvent) {
